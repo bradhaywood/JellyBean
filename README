@@ -1,0 +1,66 @@
+JellyBean - a PHP wrapper around PDO
+------------------------------------
+
+PDO is beautiful. It's safe, has a decent syntax and supports multiple drivers. 
+But writing SQL in your code still sucks, and having to remember to bind parameters can be a 
+nightmare. You just want to write your application, not worry about the finer details every time. 
+JellyBean allows you to access your database in a more "PHP Fashion". You can search by passing a normal 
+array, which Jelly Bean will automatically bind any parameters for you, or return all rows from a table. 
+
+
+Connecting
+----------
+
+I've only tested with a SQLite interface, so this is how we do it
+
+$schema = new jellybean(
+    array(
+        'driver' => 'sqlite',
+        'dbname' => 'test.db'
+    )
+);
+
+Much more declaritive than a long dsn string..
+
+To select a table (which jellybean will check exists), just use ->table(string table)
+
+$users = $schema->table('users');
+
+So, we have our jellybean object and want to start searching. Let's just get a list of ALL users
+
+$user_list = $users->search();
+
+Or you can loop through them without even declaring it into a variable
+
+foreach ($users->search() as $key => $val) {
+    echo("$key['name']: $key = $val");
+}
+
+How many rows did we get?
+
+echo($users->count());
+
+OK, that was easy. But now I just want active users.
+
+$active = $users->search(
+    array(
+        'status' => 'active'
+    )
+);
+
+Awesome! Don't forget, Jelly Bean replaces the values with '?' behind the scenes and automatically binds everything. 
+You can add as many search terms as you like (as long as they exist as columns in the database, of course).
+
+$is_active = $users->search(
+    array(
+        'status' => 'active',
+        'id'     => 2
+    )
+);
+
+!!! NOTE !!!
+------------
+
+Jelly bean is still under development and doesn't do a whole lot yet, but you're welcome to fork it and add 
+your own functionality. Currently you can just connect, search and return the number of rows from a previous 
+search.
